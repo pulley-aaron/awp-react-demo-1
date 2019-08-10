@@ -12,8 +12,13 @@ class App extends React.Component {
     
     ajaxSearch(e) {
         e.preventDefault();
+        
+        // Fetch from API
+        fetch('http://hn.algolia.com/api/v1/search?query="test"')
+            .then(results => {return results.json();})
+            .then(results => {console.log(results.hits);});
+        
         this.setState((state, props) => ({results: [Math.floor(Math.random()*99), Math.floor(Math.random()*99), Math.floor(Math.random()*99)]}));
-        console.log(this.state.results);
     }
     
     render() {
@@ -53,22 +58,5 @@ class App extends React.Component {
         );
     }
 }
-
-/*function App() {
-  return (
-    <div className="App">
-        <form>
-            <input
-                type="search"
-                name="q"
-            ></input>
-            <input
-                type="submit"
-                value="Search"
-            ></input>
-        </form>
-    </div>
-  );
-}*/
 
 export default App;
