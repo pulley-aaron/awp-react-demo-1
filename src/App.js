@@ -4,55 +4,66 @@ class App extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            results:[]
+            query: "",
+            results: []
         };
         
-        this.ajaxSearch = this.ajaxSearch.bind(this);
+        this.handleChange = this.handleChange.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
     }
     
-    ajaxSearch(e) {
+    handleChange(e) {
+        this.setState({query: e.target.value});
+    }
+    
+    handleSubmit(e) {
         e.preventDefault();
+        console.log(this.state.query);
         
         // Fetch from API
-        fetch('http://hn.algolia.com/api/v1/search?query="test"')
-            .then(results => {return results.json();})
-            .then(results => {console.log(results.hits);});
-        
-        this.setState((state, props) => ({results: [Math.floor(Math.random()*99), Math.floor(Math.random()*99), Math.floor(Math.random()*99)]}));
+        var queryString = 'http://hn.algolia.com/api/v1/search?query="'+this.state.query+'"';
+        console.log(queryString);
+        fetch(queryString)
+            .then(reply => {return reply.json();})
+            .then(data => {
+                var results = data.hits.map((item, index) => {
+                    return(
+                        <li
+                            key={index}
+                        >
+                            <a
+                                href={item.url}
+                            >
+                                {item.title}
+                            </a>
+                        </li>
+                    );
+                });
+                this.setState({results: results});
+                console.log(data);
+            });
     }
     
     render() {
-        var results = this.state.results.map((item, index) => {
-            return(
-                <li
-                    key={index}
-                >
-                    <a
-                        href="#"
-                    >
-                        {item}
-                    </a>
-                </li>
-            );
-        });
-        
         return(
             <div className="App">
                 <form
                     className="searchBar"
+                    onSubmit={this.handleSubmit}
                 >
                     <input
                         type="search"
-                        name="q"
+                        name="search"
+                        value={this.state.query}
+                        onChange={this.handleChange}
                     ></input>
                     <input
                         type="submit"
                         value="Search"
-                        onClick={this.ajaxSearch}
                     ></input>
                 </form>
                 <ul>
-                    {results}
+                    {this.state.results}
                 </ul>
             </div>
         );
