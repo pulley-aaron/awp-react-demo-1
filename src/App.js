@@ -1,4 +1,5 @@
 import React from 'react';
+import SearchResult from './SearchResult';
 
 class App extends React.Component {
     constructor(props) {
@@ -18,29 +19,23 @@ class App extends React.Component {
     
     handleSubmit(e) {
         e.preventDefault();
-        console.log(this.state.query);
         
         // Fetch from API
         var queryString = 'http://hn.algolia.com/api/v1/search?query="'+this.state.query+'"';
-        console.log(queryString);
         fetch(queryString)
             .then(reply => {return reply.json();})
             .then(data => {
                 var results = data.hits.map((item, index) => {
                     return(
-                        <li
-                            key={index}
-                        >
-                            <a
-                                href={item.url}
-                            >
-                                {item.title}
-                            </a>
-                        </li>
+                        <SearchResult
+                        key={index}
+                        url={item.url}
+                        title={item.title}
+                        />
                     );
                 });
+                // This could be enhanced to filter out results with no URL.
                 this.setState({results: results});
-                console.log(data);
             });
     }
     
@@ -67,6 +62,7 @@ class App extends React.Component {
                 </ul>
             </div>
         );
+        // This could be enhanced to separate the search bar into a reusable React component.
     }
 }
 
